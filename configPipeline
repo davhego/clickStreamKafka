@@ -1,7 +1,7 @@
 from confluent_kafka import Consumer, KafkaError
 from azure.storage.blob import BlobServiceClient
 
-# Configura el consumidor de Kafka.
+# Configura el consumidor de Kafka
 consumer = Consumer({
     'bootstrap.servers': 'TU_SERVIDOR_KAFKA',  # Reemplaza con la dirección de tu servidor Kafka
     'group.id': 'NOMBRE_DEL_GRUPO',  # Reemplaza con el ID de tu grupo de consumidores
