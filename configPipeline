@@ -1,0 +1,34 @@
+from confluent_kafka import Consumer, KafkaError
+from azure.storage.blob import BlobServiceClient
+
+# Configura el consumidor de Kafka
+consumer = Consumer({
+    'bootstrap.servers': 'TU_SERVIDOR_KAFKA',  # Reemplaza con la dirección de tu servidor Kafka
+    'group.id': 'NOMBRE_DEL_GRUPO',  # Reemplaza con el ID de tu grupo de consumidores
+    'auto.offset.reset': 'earliest'  # Cambia a 'latest' si solo quieres los mensajes nuevos
+})
+
+consumer.subscribe(['NOMBRE_DEL_TOPIC'])  # Reemplaza con el nombre de tu topic
+
+# Configura el cliente de Azure Blob Storage
+blob_service_client = BlobServiceClient.from_connection_string('sp=r&st=2024-08-28T04:11:49Z&se=2024-08-28T12:11:49Z&spr=https&sv=2022-11-02&sr=c&sig=NbIkhhpxdGePmVj8o02KhvhFuIqK4bl0%2F5Qe4OsUDf0%3D')  # la cadena de conexión
+container_client = blob_service_client.get_container_client('contenido23')  # nombre del contenedor
+
+while True:
+    msg = consumer.poll(1.0)
+
+    if msg is None:
+        continue
+    if msg.error():
+        if msg.error().code() == KafkaError._PARTITION_EOF:
+            continue
+        else:
+            print(msg.error())
+            break
+
+    # Procesa y almacena el mensaje en el Data Lake
+    blob_name = f"bronze/clickstream/{msg.key().decode('utf-8')}.json"  # Cambia la estructura si es necesario
+    blob_client = container_client.get_blob_client(blob_name)
+    blob_client.upload_blob(msg.value().decode('utf-8'))
+
+consumer.close()
