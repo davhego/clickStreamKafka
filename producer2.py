@@ -3,10 +3,13 @@ import json
 import time
 
 def send_clickstream_event(producer, topic):
+    # Obtener la hora actual en formato struct_time
+    local_time = time.localtime()
+    formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", local_time)
     # Simulamos un evento de clickstream
     event = {
         'user_id': 'johan',
-        'timestamp': int(time.time()),
+        'timestamp': formatted_time,
         'page': '/home',
         'action': 'click',
         'element': 'button_1'
