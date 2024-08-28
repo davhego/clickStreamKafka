@@ -3,15 +3,15 @@ from azure.storage.blob import BlobServiceClient
 
 # Configura el consumidor de Kafka
 consumer = Consumer({
-    'bootstrap.servers': 'TU_SERVIDOR_KAFKA',  # Reemplaza con la dirección de tu servidor Kafka
-    'group.id': 'NOMBRE_DEL_GRUPO',  # Reemplaza con el ID de tu grupo de consumidores
+    'bootstrap.servers': 'localhost:9092',  # Reemplaza con la dirección de tu servidor Kafka
+    'group.id': 'clickstream-group',  # Reemplaza con el ID de tu grupo de consumidores
     'auto.offset.reset': 'earliest'  # Cambia a 'latest' si solo quieres los mensajes nuevos
 })
 
-consumer.subscribe(['NOMBRE_DEL_TOPIC'])  # Reemplaza con el nombre de tu topic
+consumer.subscribe(['clickstream-topic'])  # Reemplaza con el nombre de tu topic
 
 # Configura el cliente de Azure Blob Storage
-blob_service_client = BlobServiceClient.from_connection_string('sp=r&st=2024-08-28T04:11:49Z&se=2024-08-28T12:11:49Z&spr=https&sv=2022-11-02&sr=c&sig=NbIkhhpxdGePmVj8o02KhvhFuIqK4bl0%2F5Qe4OsUDf0%3D')  # la cadena de conexión
+blob_service_client = BlobServiceClient.from_connection_string('DefaultEndpointsProtocol=https;AccountName=espacio2;AccountKey=yDTeT0HDDthr9WSBh9E8vbFqDq1Md6zUiXjs1me5o0xbXlrQoSnmKxjKU6iWqVrxEW1liTz3UJ1x+AStTN9Nzw==;EndpointSuffix=core.windows.net')  # la cadena de conexión
 container_client = blob_service_client.get_container_client('contenido23')  # nombre del contenedor
 
 while True:
@@ -26,9 +26,24 @@ while True:
             print(msg.error())
             break
 
+    # Verifica si la clave y el valor no son None antes de decodificar
+    key = msg.key()
+    value = msg.value()
+
+    if key is not None:
+        key_str = key.decode('utf-8')
+    else:
+        key_str = 'unknown_key'  # O alguna otra estrategia para manejar claves None
+
+    if value is not None:
+        value_str = value.decode('utf-8')
+    else:
+        print("Error: El valor del mensaje es None")
+        continue  # O maneja el caso como consideres adecuado
+
     # Procesa y almacena el mensaje en el Data Lake
-    blob_name = f"bronze/clickstream/{msg.key().decode('utf-8')}.json"  # Cambia la estructura si es necesario
+    blob_name = f"bronze/clickstream/{key_str}.json"
     blob_client = container_client.get_blob_client(blob_name)
-    blob_client.upload_blob(msg.value().decode('utf-8'))
+    blob_client.upload_blob(value_str)
 
 consumer.close()
