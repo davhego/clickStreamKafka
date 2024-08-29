@@ -24,7 +24,7 @@ def conversion(valor):
 if __name__ == "__main__":
     producer = KafkaProducer(
         bootstrap_servers='localhost:9092',
-        #lambad funcion es como los arrow funcions (variable)=> variable
+        #lambda funcion es como los arrow funcions (variable)=> variable
         value_serializer= conversion
     )
     

@@ -18,7 +18,7 @@ def send_clickstream_event(producer, topic):
 if __name__ == "__main__":
     producer = KafkaProducer(
         bootstrap_servers='localhost:9092',
-        #lambad funcion es como los arrow funcions (variable)=> variable
+        #lambda funcion es como los arrow funcions (variable)=> variable
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
     
