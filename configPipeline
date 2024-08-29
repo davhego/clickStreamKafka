@@ -33,7 +33,7 @@ while True:
     if key is not None:
         key_str = key.decode('utf-8')
     else:
-        key_str = 'unknown_key'  # O alguna otra estrategia para manejar claves None
+        key_str = 'unknown_key3'  # O alguna otra estrategia para manejar claves None
 
     if value is not None:
         value_str = value.decode('utf-8')
