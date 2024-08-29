@@ -56,6 +56,7 @@
         // Decodificar el token para obtener los datos del usuario
         const decoded = jwt_decode(credential);
     
+        console.log(decoded);
         // Acceder a los datos del usuario
         const email = decoded.email;
         const name = decoded.name;
@@ -66,6 +67,29 @@
         console.log("Token:", response.credential);
         console.log("Name:", name);
         console.log("Picture URL:", picture);
+
+        let data = new FormData();
+        data.append("email",email);
+        data.append("name",name);
+        data.append("picture",picture);
+
+        let url = "http://localhost/setData";
+        const configuraValida = {
+            url: url,
+            type: 'POST',
+            data:data,
+            contentType: false,
+            processData: false,
+            cache: false,
+        };
+
+        $.ajax(configuraValida)
+            .done((data)=>{
+                console.log(data);
+            })
+            .fail((e)=>{
+                alert("Error al transmitir los datos");
+            })
     }
 </script>
 </body>

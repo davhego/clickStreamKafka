@@ -17,6 +17,8 @@ container_client = blob_service_client.get_container_client('contenido23')  # no
 while True:
     msg = consumer.poll(1.0)
 
+    print(f'Llego {msg}')
+
     if msg is None:
         continue
     if msg.error():
@@ -29,21 +31,24 @@ while True:
     # Verifica si la clave y el valor no son None antes de decodificar
     key = msg.key()
     value = msg.value()
+    print(f'Llego {value}')
 
     if key is not None:
         key_str = key.decode('utf-8')
     else:
-        key_str = 'unknown_key3'  # O alguna otra estrategia para manejar claves None
+        key_str = 'unknown_key10'  # O alguna otra estrategia para manejar claves None
+        
 
     if value is not None:
         value_str = value.decode('utf-8')
+        # Procesa y almacena el mensaje en el Data Lake
+        print(f'Llego2 {value}')
+        blob_name = f"bronze/clickstream/negro.json"
+        blob_client = container_client.get_blob_client(blob_name)
+        blob_client.upload_blob(value_str, overwrite=True)
+
     else:
         print("Error: El valor del mensaje es None")
-        continue  # O maneja el caso como consideres adecuado
-
-    # Procesa y almacena el mensaje en el Data Lake
-    blob_name = f"bronze/clickstream/{key_str}.json"
-    blob_client = container_client.get_blob_client(blob_name)
-    blob_client.upload_blob(value_str)
+        continue  # O maneja el caso como consideres adecuado    
 
 consumer.close()
