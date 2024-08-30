@@ -1,5 +1,6 @@
 from confluent_kafka import Consumer, KafkaError
 from azure.storage.blob import BlobServiceClient
+import time
 
 # Configura el consumidor de Kafka
 consumer = Consumer({
@@ -15,40 +16,53 @@ blob_service_client = BlobServiceClient.from_connection_string('DefaultEndpoints
 container_client = blob_service_client.get_container_client('contenido23')  # nombre del contenedor
 
 while True:
-    msg = consumer.poll(1.0)
+    try:
+        msg = consumer.poll(1.0)
 
-    print(f'Llego {msg}')
+        print(f'Llego {msg}')
 
-    if msg is None:
-        continue
-    if msg.error():
-        if msg.error().code() == KafkaError._PARTITION_EOF:
+        if msg is None:
             continue
+        if msg.error():
+            if msg.error().code() == KafkaError._PARTITION_EOF:
+                continue
+            else:
+                print(msg.error())
+                break
+
+        # Verifica si la clave y el valor no son None antes de decodificar
+        key = msg.key()
+        value = msg.value()
+
+        if key is not None:
+            key_str = key.decode('utf-8')
+            if value is not None:
+                value_str = value.decode('utf-8')
+                # Procesa y almacena el mensaje en el Data Lake
+                print(f'Llego2 {value}')
+                # damos la ruta y nombre del archivo
+                blob_name = f"bronze/clickstream/{key_str}.json" 
+                #permite que el cliente obtenga la ubicación a subir el archivo, 
+                #el archivo no necesariamente tiene que existir
+                blob_client = container_client.get_blob_client(blob_name)
+                #se sube el archivo si no existe
+                blob_client.upload_blob(value_str)
+
+            else:
+                #no llegó valor de mensaje
+                print("Error: El valor del mensaje es None") 
+                continue  
         else:
-            print(msg.error())
-            break
-
-    # Verifica si la clave y el valor no son None antes de decodificar
-    key = msg.key()
-    value = msg.value()
-    print(f'Llego {value}')
-
-    if key is not None:
-        key_str = key.decode('utf-8')
-    else:
-        key_str = 'unknown_key10'  # O alguna otra estrategia para manejar claves None
+            # no llegó ninguna clave
+            print(f'Error: El key es None')
+            continue   
         
-
-    if value is not None:
-        value_str = value.decode('utf-8')
-        # Procesa y almacena el mensaje en el Data Lake
-        print(f'Llego2 {value}')
-        blob_name = f"bronze/clickstream/negro.json"
+    except Exception as e:
+        # Manejo de la excepción
+        print(f"Ocurrió un error: {e}")
+        name = int(time.time())
+        blob_name = f"bronze/clickstream/error_{name}.json" 
         blob_client = container_client.get_blob_client(blob_name)
-        blob_client.upload_blob(value_str, overwrite=True)
-
-    else:
-        print("Error: El valor del mensaje es None")
-        continue  # O maneja el caso como consideres adecuado    
+        blob_client.upload_blob(e)
 
 consumer.close()

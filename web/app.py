@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from producer import Producer
+import time
 
 app = Flask(__name__)
 
@@ -15,18 +16,23 @@ def paginaError(error):
 @app.route('/setData',methods=['POST'])
 def getDate():
     if request.method == 'POST':
+        # Obtener la hora actual en formato año_mes_dia_H_m_s
+        local_time = time.localtime()
+        formatted_time = time.strftime("%Y_%m_%d__%H_%M_%S", local_time)
+        id = f"{request.form['name']}_{formatted_time}"
         person={
             'username': request.form['name'],
             'email': request.form['email'],
             'picture': request.form['picture'],
         }
-        sendDataProducer(person)
+        sendDataProducer(person, key=id)
         return f'información recibida correctamente'
     else:
         return f'Error'
 
-def sendDataProducer(person):
-    productor = Producer(informacion=person)
+def sendDataProducer(person,key):
+    key = key.replace(" ","_")
+    productor = Producer(informacion=person, id=key)
     productor.enviar()
 
 if __name__ == '__main__':

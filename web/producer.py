@@ -1,30 +1,24 @@
 from kafka import KafkaProducer
 import json
-import time
 
 class Producer:
 
-    def __init__(self, informacion):
+    def __init__(self, informacion, id):
         self.informacion = informacion
+        self.key = id.encode('utf-8')
         self.producer = KafkaProducer(
             bootstrap_servers='localhost:9092',
             #lambda funcion es como los arrow funcions (variable)=> variable
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
 
+    #metodo para enviar la data al consumer
     def enviar(self):
         topic = 'clickstream-topic'
-        self.send_clickstream_event(self.producer, topic, self.informacion)
+        self.send_clickstream_event(self.producer, topic, self.informacion, self.key)
 
-    def send_clickstream_event(self, producer, topic, event):
-        # Simulamos un evento de clickstream
-        #event = {
-        #    'user_id': 'user_123',
-        #    'timestamp': int(time.time()),
-        #    'page': '/home',
-        #    'action': 'click',
-        #   'element': 'button_1'
-        #}
+    def send_clickstream_event(self, producer, topic, event, id):
         # el value= realiza una asignación explicita al value_serializer
-        producer.send(topic, value=event)
+        print(f"Sent: {id}")
+        producer.send(topic, value=event, key=id)
         print(f"Sent: {event}")
