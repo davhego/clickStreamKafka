@@ -42,11 +42,10 @@ try:
     print(movie)
     """
     database = client["clickStream"]
-    collection = database["tbl_usuarios"]
+    collection = database["tbl_loginxxx"]
 
     #document_list = [{"user":"david","deporte":"basket"},{"user":"fulvio","deporte":"badmington"}]
     #result=collection.insert_many(document_list)
-
 
     datas = collection.find({})
     for data in datas:
@@ -54,7 +53,7 @@ try:
 
     print(f"---------------------------------------")
 
-    datas = collection.distinct("pais")
+    datas = collection.distinct("username")
     for data in datas:
         print(data)
 
