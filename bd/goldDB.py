@@ -100,7 +100,7 @@ def run_etl():
         df = extract_data(silver_container, blob_name)
 
         # Transformación
-        blob_name = blob_name.split("/")[-1]
+        blob_name = blob_name.split("/")[-1]#obtenemos el nombre del archivo como tal
         df_transformed = transform_data(df,blob_name)
 
         # Carga
