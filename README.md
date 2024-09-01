@@ -24,6 +24,7 @@ Una vez los datos procesados se creará un DashBoard simple utilizando la librer
 
 ![image](https://github.com/user-attachments/assets/35165bdd-eef8-41e0-a481-4a2963896161)
 
+Diagrama de procesos:
 
 ![Etl](https://github.com/user-attachments/assets/6ce71215-34f0-4c64-9376-0eb52878f39d)
 
