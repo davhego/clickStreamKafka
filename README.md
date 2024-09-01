@@ -11,4 +11,16 @@ Entendiendo una posible escalabilidad del proyecto, se crea un broker con kafka 
 
 ![proyectoPresentacion](https://github.com/user-attachments/assets/3d68c8e5-3694-45ae-8834-5cb29d332b68)
 
-Para establecer conexión con el broker kafka se debe inicializar zookeper y crear un tópico y un producer para enviar los mensajes.
+Para establecer conexión con el broker kafka se debe inicializar zookeper y crear un tópico y un producer para enviar los mensajes. Se crea el scriptconfigPipeline el cual se suscribirá al topico creado y almacenerá todos los mensajes publicados por el broker en el Data Lake de azure. Los mensajes se guardaran en formato JSON.
+
+Para la extracción de datos y almacenamiento a traves de un primer ETL se configurarán DAG´s a traves de Airflow. Se creará un DAG con actividades importadas de un script llamado azureEtl el cual se encuenra en la carpeta LinuxDags. Para el uso de Airflow, optaremos por inicializar ubuntu en windows y crear un entonrno virtual para no interferir con las demás dependencias.
+
+Una vez ejecutado el airflow, el DAG dagEtl me extraerá los datos, los transformará eliminando elementos repetidos y elementos nulos y los cargará en formato JSON para obtener una nueva capa silver en Azure Blob. Esta capa silver nos permitirá disponer de los datos de manera sencilla y con la información necesaria para generar datos en una capa Gold según sea necesario.
+
+Para finalizar el procesamiento y presentación de daos se creará una base de datos no estructurada en mongoDB, la cual tendrá como proposito almacenar la capa gold de la información permitiendonos así la extracción de datos necesaria haciendo mas rápida la consulta.
+Este proceso de ETL se llevará a cabo en el script goldDB.py.
+
+Una vez los datos procesados se creará un DashBoard simple utilizando la librería Dash de python.
+
+![image](https://github.com/user-attachments/assets/35165bdd-eef8-41e0-a481-4a2963896161)
+
