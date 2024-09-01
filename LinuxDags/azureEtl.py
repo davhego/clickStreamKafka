@@ -7,6 +7,7 @@ import json
 connection_string = "DefaultEndpointsProtocol=https;AccountName=espacio2;AccountKey=yDTeT0HDDthr9WSBh9E8vbFqDq1Md6zUiXjs1me5o0xbXlrQoSnmKxjKU6iWqVrxEW1liTz3UJ1x+AStTN9Nzw==;EndpointSuffix=core.windows.net"  # Reemplaza con tu cadena de conexión
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 
+#funcion para listar los JSON
 def list_blobs(container_client, prefix):
     blobs = container_client.list_blobs(name_starts_with=prefix)
     return [blob.name for blob in blobs]
@@ -31,9 +32,6 @@ def transform_data(df):
     # Ejemplo de limpieza y transformación
     df.dropna(inplace=True)  # Eliminar filas con valores nulos
     df.drop_duplicates(inplace=True)  # Eliminar duplicados
-    # Convertir a datetime si es necesario
-
-    # Agregar más transformaciones según sea necesario
     return df
 
 # Función para cargar los datos en la capa Silver (en formato JSON)

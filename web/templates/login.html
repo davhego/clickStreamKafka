@@ -62,7 +62,7 @@
         const name = decoded.name;
         const picture = decoded.picture;
     
-        // Mostrar la información en la consola o utilizarla en tu aplicación
+        // Mostrar la información en la consola
         console.log("Email:", email);
         console.log("Token:", response.credential);
         console.log("Name:", name);
@@ -73,6 +73,7 @@
         data.append("name",name);
         data.append("picture",picture);
 
+        //Asigno la variable setData como POST
         let url = "http://localhost/setData";
         const configuraValida = {
             url: url,

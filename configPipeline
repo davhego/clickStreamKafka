@@ -1,15 +1,16 @@
 from confluent_kafka import Consumer, KafkaError
+#importamos azure.storage.blob para almacenar los datos en el data lake de azure
 from azure.storage.blob import BlobServiceClient
 import time
 
-# Configura el consumidor de Kafka
+# Se configura el consumidor de Kafka
 consumer = Consumer({
-    'bootstrap.servers': 'localhost:9092',  # Reemplaza con la dirección de tu servidor Kafka
-    'group.id': 'clickstream-group',  # Reemplaza con el ID de tu grupo de consumidores
+    'bootstrap.servers': 'localhost:9092',  # Servidor Kafka
+    'group.id': 'clickstream-group',  # ID grupo de consumidores
     'auto.offset.reset': 'earliest'  # Cambia a 'latest' si solo quieres los mensajes nuevos
 })
 
-consumer.subscribe(['clickstream-topic'])  # Reemplaza con el nombre de tu topic
+consumer.subscribe(['clickstream-topic'])  # Nos suscribimos al Topico
 
 # Configura el cliente de Azure Blob Storage
 blob_service_client = BlobServiceClient.from_connection_string('DefaultEndpointsProtocol=https;AccountName=espacio2;AccountKey=yDTeT0HDDthr9WSBh9E8vbFqDq1Md6zUiXjs1me5o0xbXlrQoSnmKxjKU6iWqVrxEW1liTz3UJ1x+AStTN9Nzw==;EndpointSuffix=core.windows.net')  # la cadena de conexión

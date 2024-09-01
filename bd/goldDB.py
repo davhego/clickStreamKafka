@@ -111,6 +111,7 @@ def run_etl():
 
         print(f"ETL completado para {blob_name} y datos almacenados en Mongo!")
     #termina el ciclo for
+    
     client.close()
 
 if __name__ == "__main__":
